@@ -1,7 +1,23 @@
 name = "GenClassifierPT"
-uuid = "e472e436-13e8-4656-ae40-37dd198f3e9c"
+uuid = "9410b63a-2434-405a-90ad-c58f6f75f526"
 authors = ["Julian Arnold", "Frank Schäfer", "Alan Edelman", "Christoph Bruder"]
 version = "1.0.0-DEV"
+
+[deps]
+DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+FiniteDiff = "6a86dc24-6348-571c-b903-95158fe2bd41"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
+ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"
+JLD = "4138dd39-2aa7-5051-a626-17a0bb65d9c8"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+PyPlot = "d330b81b-6aea-500a-939a-2ce795aea3ee"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 
 [compat]
 julia = "1"
