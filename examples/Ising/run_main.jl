@@ -4,18 +4,17 @@ using Pkg; Pkg.activate("../..")
 
 # load packages
 using GenClassifierPT
-using DelimitedFiles
 using LaTeXStrings
 using Plots
-using Random
 ENV["GKSwstype"]="nul"
 using JLD
 
-# choose system size
+# system size
 L = 20
 
 # set path to data folder
-data_save_folder = "../../data/Ising/L="*string(L)*"/"
+#data_save_folder = "../../data/Ising/L="*string(L)*"/"
+data_save_folder = "/home/julian/.julia/dev/actual_data/data/Ising/L=20/"
 
 # define parameter ranges
 γ1_min = -1.475f0
@@ -102,6 +101,7 @@ ylims!((γ2_range[2],γ2_range[end-1]))
 ##########
 
 # define l parameter to choose for scheme 2
+# heuristic: choosing l to be small enough to capture only local variations but large enough to obtain a smooth signal by averaging over multiple points in parameter space
 l_param = 2
 
 # compute indicator of scheme 2 based on set of generative models
@@ -138,8 +138,11 @@ ylims!((γ2_range[2],γ2_range[end-1]))
 ##########
 
 # compute indicator of scheme 3 based on set of generative models
-#_, _, I_3 = GCPT.run_scheme_3(x_data, p_data, [dγ1, dγ2])
+# here the tuning parameters are estimated element-wise from linescan which decreases the bias of the corresponding estimator
 I_3 = GCPT.run_scheme_3_linescans(x_data, p_data, [dγ1, dγ2])
+
+# alternatively, the tuning parameters can be estimated jointly from the entire parameter space (in case of the Ising model this leads to a qualitatively similar, but weaker indicator signal)
+#_, _, I_3 = GCPT.run_scheme_3(x_data, p_data, [dγ1, dγ2])
 
 # plotting routine
 function f(γ1,γ2,I_3)

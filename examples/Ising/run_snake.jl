@@ -4,19 +4,18 @@ using Pkg; Pkg.activate("../..")
 
 # load packages
 using GenClassifierPT
-using DelimitedFiles
 using LaTeXStrings
 using Plots
-using Random
 ENV["GKSwstype"]="nul"
 using JLD
 using Flux
 
-# choose system size
+# system size
 L = 20
 
 # set path to data folder
-data_save_folder = "../../data/Ising/L="*string(L)*"/"
+#data_save_folder = "../../data/Ising/L="*string(L)*"/"
+data_save_folder = "/home/julian/.julia/dev/actual_data/data/Ising/L=20"
 
 # define parameter ranges
 p1_min = -1.475f0
@@ -78,7 +77,7 @@ end
 # set hyperparameters
 lr_int = 0.0001f0
 lr_ext = 0.0005f0
-n_nodes=4
+l_param = 2
 w0=5*maximum([dp1_ren,dp2_ren])
 w_end=minimum([dp1_ren,dp2_ren])
 w_decay = 0.90f0
@@ -89,7 +88,7 @@ opt_external = Adam(lr_ext)
 n_epochs = 400
 
 # initialize snake
-snake = GCPT.initialize_snake(def_vertices(p1_range_ren,p2_range_ren),PBC=false,FBC=false,boundaries,p1_range_ren,p2_range_ren,n_nodes=n_nodes,α=α,β=β,w0=w0,w_end=w_end,w_decay=w_decay,reshape=false,train_local=false,max_move=false,max_moves=[5*dp1,5*dp2],treat_boundary=false)
+snake = GCPT.initialize_snake(def_vertices(p1_range_ren,p2_range_ren),PBC=false,FBC=false,boundaries,p1_range_ren,p2_range_ren,n_nodes=l_param*2,α=α,β=β,w0=w0,w_end=w_end,w_decay=w_decay,reshape=false,train_local=false,max_move=false,max_moves=[5*dp1,5*dp2],treat_boundary=false)
 
 # plot reference phase boundary and initial snake
 plot(ref_phase_boundary[:,1,1],ref_phase_boundary[:,2,1],color="green",label="analytical",legend=:topleft)
