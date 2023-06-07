@@ -5,13 +5,13 @@ This repository contains a Julia implementation of the generative approach to ph
 ### Abstract of the paper
 One of the central tasks in many-body physics is the determination of phase diagrams which can be cast as a classification problem. Typically, classification problems are tackled using discriminative classifiers that explicitly model the conditional probability of labels given a sample. Here, we show that phase-classification problems are naturally suitable to be solved using generative classifiers that are based on probabilistic models of the measurement statistics underlying the physical system. Such a generative approach benefits from modeling concepts native to the realm of statistical and quantum physics, as well as recent advances in machine learning. This yields a powerful framework for mapping out phase diagrams of classical and quantum systems in an automated fashion capable of leveraging prior system knowledge.
 
-![](./assets/method.pdf)
+![](./assets/method.png)
 
 ### This repository
 
 contains code to map out phase diagrams given generative models. The source files can be found in [source folder](./src/). We provide exemplary code for
 
-* the equilibrium phase diagram of the two-dimensional anisotropic Ising model (of size 20 x 20), see [the folder](./examples/ising/).
+* the equilibrium phase diagram of the two-dimensional anisotropic Ising model (of size 20 x 20), see [the folder](./examples/Ising/).
 
 The corresponding data can be found in the [data folder](./data/). Other physical systems can be analyzed in the same fashion.
 
@@ -19,8 +19,8 @@ The corresponding data can be found in the [data folder](./data/). Other physica
 
 - install [julia](https://julialang.org/downloads/)
 - download, `activate`, and `instantiate` [`Pkg.instantiate()`] our package
-- individual files can then be executed by calling, e.g., `julia main_ising.jl`
-- output data/figures are stored in the associated results folder.
+- individual files can then be executed by calling, e.g., `julia run_main.jl`
+- uncomment `savefig()` functions to save plots
 
 ## Authors:
 
