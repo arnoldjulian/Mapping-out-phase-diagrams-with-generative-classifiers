@@ -16,7 +16,7 @@ using LinearAlgebra
 using ForwardDiff
 using FiniteDiff
 using ITensors
-using Flux 
+using Flux
 
 # include additional files
 include("scheme_1.jl")
