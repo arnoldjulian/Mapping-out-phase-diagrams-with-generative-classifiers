@@ -7,7 +7,9 @@ One of the central tasks in many-body physics is the determination of phase diag
 
 ![](./assets/method.png)
 
+<p align="center">
 <img src="./assets/method.png" width="50%" height="50%">
+</p>
 
 ### This repository
 
