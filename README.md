@@ -7,6 +7,8 @@ One of the central tasks in many-body physics is the determination of phase diag
 
 ![](./assets/method.png)
 
+<img src="./assets/method.png" width="50%" height="50%">
+
 ### This repository
 
 contains code to map out phase diagrams given generative models. The source files can be found in [source folder](./src/). We provide exemplary code for
