@@ -26,10 +26,10 @@ The corresponding data can be found in the [data folder](./data/). Other physica
 
 ## Authors:
 
-- [Julian Arnold](https://github.com/arnoldjulian)
-- [Frank Schäfer](https://github.com/frankschae)
-- Alan Edelman
-- Christoph Bruder
+- [Julian Arnold](https://arnoldjulian.github.io/)
+- [Frank Schäfer](https://frankschae.github.io/)
+- [Alan Edelman](https://math.mit.edu/~edelman/)
+- [Christoph Bruder](https://quantumtheory-bruder.physik.unibas.ch/en/people/group-members/christoph-bruder/)
 
 ```
 @article{arnold:2023,
