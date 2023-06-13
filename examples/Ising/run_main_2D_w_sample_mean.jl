@@ -14,7 +14,7 @@ ENV["GKSwstype"] = "nul"
 using JLD
 
 # system size
-L = 6
+L = 20
 
 # set path to data folder
 data_save_folder = "../../data/Ising/L=" * string(L) * "/"
