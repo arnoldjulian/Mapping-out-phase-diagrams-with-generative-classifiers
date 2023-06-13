@@ -21,7 +21,7 @@ The corresponding data can be found in the [data folder](./data/). The data for 
 
 - install [julia](https://julialang.org/downloads/)
 - download, `activate`, and `instantiate` [`Pkg.instantiate()`] our package
-- individual files can then be executed by calling, e.g., `julia run_main.jl`
+- individual files can then be executed by calling, e.g., `julia run_main_2D.jl`
 - uncomment `savefig()` functions to save plots
 
 ## Authors:

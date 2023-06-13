@@ -66,17 +66,17 @@ function get_new_class_data(x_data, class_data, param_space_dim)
     n_classes = length(class_data)
 
     if param_space_dim == 1
-        new_class_data= zeros(Int64,size(x_data)[1],n_classes)
+        new_class_data = zeros(Int64, size(x_data)[1], n_classes)
         for class in 1:n_classes
             for indx in 1:length(class_data[class])
-                new_class_data[class_data[class][indx][1],class] = 1
+                new_class_data[class_data[class][indx][1], class] = 1
             end
         end
     elseif param_space_dim == 2
-        new_class_data= zeros(Int64,size(x_data)[1], size(x_data)[2],n_classes)
+        new_class_data = zeros(Int64, size(x_data)[1], size(x_data)[2], n_classes)
         for class in 1:n_classes
             for indx in 1:length(class_data[class])
-                new_class_data[class_data[class][indx][1],class_data[class][indx][2],class] = 1
+                new_class_data[class_data[class][indx][1], class_data[class][indx][2], class] = 1
             end
         end
     else
@@ -86,84 +86,90 @@ function get_new_class_data(x_data, class_data, param_space_dim)
     return new_class_data
 end
 
-
 # scheme 1 with expectation values being approximated with sample mean, where n_samples denotes the number of samples drawn at each point in parameter space
-function run_scheme_1(x_data,class_data,dp,n_samples)
+function run_scheme_1(x_data, class_data, dγ, n_samples)
     param_space_dim = length(size(x_data)) - 1
     n_classes = size(class_data)[end]
 
     if param_space_dim == 1
-        mean_pred = zeros(eltype(dp[1]),(size(x_data)[1],1,length(class_data)))
+        mean_pred = zeros(eltype(dγ[1]), (size(x_data)[1], 1, length(class_data)))
         for j in 1:size(x_data)[1]
             for i in 1:n_samples
-                mean_pred[j,1,:] .+= get_pred_scheme_1(x_data,class_data,dp,get_sample([j],x_data))
+                mean_pred[j, 1, :] .+= get_pred_scheme_1(x_data,
+                    class_data,
+                    dγ,
+                    get_sample([j], x_data))
             end
         end
-        mean_pred .= mean_pred./n_samples
+        mean_pred .= mean_pred ./ n_samples
 
         I_1_classes = zeros(eltype(x_data_r[1, 1]), size(x_data)[1] - 2, n_classes)
 
         for i in 1:n_classes
             grad = (circshift(@view(mean_pred[:, i]), (-1)) .-
-                    circshift(@view(mean_pred[:, i]), (1))) ./ (2 * dp[1])
+                    circshift(@view(mean_pred[:, i]), (1))) ./ (2 * dγ[1])
             I_1_classes[:, i] = @view sqrt.(grad .^ 2)[2:(end - 1)]
         end
 
     elseif param_space_dim == 2
-        mean_pred = zeros(eltype(dp[1]),(size(x_data)[1],size(x_data)[2],length(class_data)))
+        mean_pred = zeros(eltype(dp[1]),
+            (size(x_data)[1], size(x_data)[2], length(class_data)))
         for k in 1:size(x_data)[2]
             for j in 1:size(x_data)[1]
                 for i in 1:n_samples
-                    mean_pred[j,k,:] .+= get_pred_scheme_1(x_data,class_data,dp,get_sample([j,k],x_data))
+                    mean_pred[j, k, :] .+= get_pred_scheme_1(x_data,
+                        class_data,
+                        dp,
+                        get_sample([j, k], x_data))
                 end
             end
         end
-        mean_pred .= mean_pred./n_samples
+        mean_pred .= mean_pred ./ n_samples
 
-        I_1_classes = zeros(eltype(dp[1]),
-        size(x_data)[1] - 2,
-        size(x_data)[2] - 2,
-        n_classes)
+        I_1_classes = zeros(eltype(dγ[1]),
+            size(x_data)[1] - 2,
+            size(x_data)[2] - 2,
+            n_classes)
 
         for i in 1:n_classes
             grad_1 = (circshift(@view(mean_pred[:, :, i]), (-1, 0)) .-
-                    circshift(@view(mean_pred[:, :, i]), (1, 0))) ./ (2 * dp[1])
+                      circshift(@view(mean_pred[:, :, i]), (1, 0))) ./ (2 * dγ[1])
             grad_2 = (circshift(@view(mean_pred[:, :, i]), (0, -1)) .-
-                    circshift(@view(mean_pred[:, :, i]), (0, 1))) ./ (2 * dp[2])
+                      circshift(@view(mean_pred[:, :, i]), (0, 1))) ./ (2 * dγ[2])
             I_1_classes[:, :, i] = @view sqrt.(grad_1 .^ 2 .+ grad_2 .^ 2)[2:(end - 1),
                 2:(end - 1)]
         end
 
-      else
+    else
         error("Parameter spaces with dimension > 2 are currently not supported. Need to implement the corresponding derivative.")
-      end
+    end
 
     I_1 = sum(I_1_classes, dims = param_space_dim + 1) ./ n_classes
-    
-	return mean_pred, I_1_classes, I_1
+
+    return mean_pred, I_1_classes, I_1
 end
 
 # constructing the probability distribution over labels given a particular sample
-function get_pred_scheme_1(x_data,class_data,dp,sampl)
-	probs = zeros(eltype(dp[1]),length(class_data))
+function get_pred_scheme_1(x_data, class_data, dγ, sampl)
+    probs = zeros(eltype(dγ[1]), length(class_data))
 
-    if length(dp) == 1
+    if length(dγ) == 1
         for i in 1:length(class_data)
-            for p in class_data[i]
-                probs[i] += get_probability(sampl,[p[1]],x_data)
+            for γ in class_data[i]
+                probs[i] += get_probability(sampl, [γ[1]], x_data)
             end
         end
     else
         for i in 1:length(class_data)
-            for p in class_data[i]
-                probs[i] += get_probability(sampl,[p[1],p[2]],x_data)
+            for γ in class_data[i]
+                probs[i] += get_probability(sampl, [γ[1], γ[2]], x_data)
             end
         end
     end
 
-	if sum(probs) > eps(eltype(dp[1]))
-		return probs./sum(probs)
-	else
-		return zeros(eltype(dp[1]),length(class_data))
-	end
+    if sum(probs) > eps(eltype(dγ[1]))
+        return probs ./ sum(probs)
+    else
+        return zeros(eltype(dγ[1]), length(class_data))
+    end
 end

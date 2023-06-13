@@ -17,7 +17,7 @@ using Flux
 L = 6
 
 # set path to data folder
-data_save_folder = "../../data/Ising/L="*string(L)*"/"
+data_save_folder = "../../data/Ising/L=" * string(L) * "/"
 
 # define parameter ranges
 p1_min = -1.475f0

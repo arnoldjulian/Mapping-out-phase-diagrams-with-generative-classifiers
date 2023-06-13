@@ -1,5 +1,5 @@
 # In this script, we analyze the 2D phase diagram of the classical anisotropic Ising model using the three schemes introduced in the main text
-# Here, we approximate expected values with sample means. For routines which compute expected values exactly, as was done for Fig. 2 in the main text (as well as Fig. 2 in the SM), see script `run_main.jl`.
+# Here, we compute expected values exactly (similarly for Fig. 2 of the main text and Fig. 2 of the SM). For routines which approximate expected values with sample means, see script `run_main_2D_w_sample_mean.jl`.
 
 # activate project
 cd(@__DIR__)
@@ -17,7 +17,7 @@ using JLD
 L = 6
 
 # set path to data folder
-data_save_folder = "../../data/Ising/L="*string(L)*"/"
+data_save_folder = "../../data/Ising/L=" * string(L) * "/"
 
 # define parameter ranges
 γ1_min = -1.475f0
@@ -49,9 +49,6 @@ p_data = load(data_save_folder * "p_data.jld")["p_data"]
 # load analytical reference phase boundary
 ref_phase_boundary = load(data_save_folder * "ref_phase_boundary.jld")["ref_phase_boundary"]
 
-# set number of samples to draw from generative model at each point in parameter space
-n_samples = 100
-
 ##########
 # scheme 1
 ##########
@@ -61,20 +58,20 @@ n_classes = 5
 class_data = Vector{Vector{Int64}}[]
 for class_indx in 1:n_classes
     if class_indx == 1
-        push!(class_data,[[10,10]])
+        push!(class_data, [[10, 10]])
     elseif class_indx == 2
-        push!(class_data,[[10, length(γ2_range) - 10]])
+        push!(class_data, [[10, length(γ2_range) - 10]])
     elseif class_indx == 3
-        push!(class_data,[[length(γ1_range) - 10, 10]])
+        push!(class_data, [[length(γ1_range) - 10, 10]])
     elseif class_indx == 4
-        push!(class_data,[[length(γ1_range) - 10, length(γ2_range) - 10]])
+        push!(class_data, [[length(γ1_range) - 10, length(γ2_range) - 10]])
     else
-        push!(class_data,[[Int(length(γ1_range) / 2), Int(length(γ2_range) / 2)]])
+        push!(class_data, [[Int(length(γ1_range) / 2), Int(length(γ2_range) / 2)]])
     end
 end
 
 # obtain indicator of scheme 1 based on set of generative models
-_,_,I_1 = GCPT.run_scheme_1(x_data, class_data, [dγ1, dγ2],n_samples)
+_, _, I_1 = GCPT.run_scheme_1(x_data, class_data, [dγ1, dγ2])
 
 # plotting routine
 function f(γ1, γ2, I_1)
@@ -92,8 +89,8 @@ Y = repeat(y, 1, length(x))
 Z = map((x, y) -> f(x, y, I_1), X, Y)
 
 plt = contour(x, y, (x, y) -> f(x, y, I_1), fill = true, dpi = 300, color = :thermal)
-xlabel!(L"J_{x}/k_{\mathrm{B}}T}")
-ylabel!(L"J_{y}/k_{\mathrm{B}}T}")
+xlabel!(L"J_{x}/k_{\mathrm{B}}T")
+ylabel!(L"J_{y}/k_{\mathrm{B}}T")
 plot!(ref_phase_boundary[:, 1, 1],
     ref_phase_boundary[:, 2, 1],
     color = "green",
@@ -112,7 +109,7 @@ plot!(ref_phase_boundary[:, 1, 4],
     label = false)
 xlims!((γ1_range[2], γ1_range[end - 1]))
 ylims!((γ2_range[2], γ2_range[end - 1]))
-#savefig("./results_ising_scheme_1_w_sample_mean.png")
+#savefig("./results_ising_2D_scheme_1.png")
 
 ##########
 # scheme 2
@@ -129,7 +126,7 @@ I_2 = GCPT.run_scheme_2(x_data,
     γ1_range_LBC,
     γ2_range,
     γ2_range_LBC,
-    [dγ1, dγ2],n_samples)
+    [dγ1, dγ2])
 
 # plotting routine
 function f(γ1, γ2, I_2)
@@ -153,8 +150,8 @@ plt = contourf(x,
     dpi = 300,
     color = :thermal,
     levels = 1000)
-xlabel!(L"J_{x}/k_{\mathrm{B}}T}")
-ylabel!(L"J_{y}/k_{\mathrm{B}}T}")
+xlabel!(L"J_{x}/k_{\mathrm{B}}T")
+ylabel!(L"J_{y}/k_{\mathrm{B}}T")
 plot!(ref_phase_boundary[:, 1, 1],
     ref_phase_boundary[:, 2, 1],
     color = "green",
@@ -173,7 +170,7 @@ plot!(ref_phase_boundary[:, 1, 4],
     label = false)
 xlims!((γ1_range[2], γ1_range[end - 1]))
 ylims!((γ2_range[2], γ2_range[end - 1]))
-#savefig("./results_ising_scheme_2_w_sample_mean.png")
+#savefig("./results_ising_2D_scheme_2.png")
 
 ##########
 # scheme 3
@@ -181,10 +178,10 @@ ylims!((γ2_range[2], γ2_range[end - 1]))
 
 # compute indicator of scheme 3 based on set of generative models
 # here the tuning parameters are estimated element-wise from linescan which decreases the bias of the corresponding estimator
-I_3 = GCPT.run_scheme_3_linescans(x_data, p_data, [dγ1, dγ2],n_samples)
+I_3 = GCPT.run_scheme_3_linescans(x_data, p_data, [dγ1, dγ2])
 
 # alternatively, the tuning parameters can be estimated jointly from the entire parameter space (in case of the Ising model this leads to a qualitatively similar, but weaker indicator signal)
-#_, _, I_3 = GCPT.run_scheme_3(x_data, p_data, [dγ1, dγ2], n_samples)
+#_, _, I_3 = GCPT.run_scheme_3(x_data, p_data, [dγ1, dγ2])
 
 # plotting routine
 function f(γ1, γ2, I_3)
@@ -208,8 +205,8 @@ plt = contourf(x,
     dpi = 300,
     color = :thermal,
     levels = 1000)
-xlabel!(L"J_{x}/k_{\mathrm{B}}T}")
-ylabel!(L"J_{y}/k_{\mathrm{B}}T}")
+xlabel!(L"J_{x}/k_{\mathrm{B}}T")
+ylabel!(L"J_{y}/k_{\mathrm{B}}T")
 plot!(ref_phase_boundary[:, 1, 1],
     ref_phase_boundary[:, 2, 1],
     color = "green",
@@ -228,4 +225,4 @@ plot!(ref_phase_boundary[:, 1, 4],
     label = false)
 xlims!((γ1_range[2], γ1_range[end - 1]))
 ylims!((γ2_range[2], γ2_range[end - 1]))
-#savefig("./results_ising_scheme_3_w_sample_mean.png")
+#savefig("./results_ising_2D_scheme_3.png")
