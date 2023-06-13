@@ -12,11 +12,10 @@ using JLD
 using Flux
 
 # system size
-L = 20
+L = 6
 
 # set path to data folder
-#data_save_folder = "../../data/Ising/L="*string(L)*"/"
-data_save_folder = "/home/julian/.julia/dev/actual_data/data/Ising/L=20"
+data_save_folder = "../../data/Ising/L="*string(L)*"/"
 
 # define parameter ranges
 p1_min = -1.475f0
@@ -42,7 +41,7 @@ dp2_ren = p2_range_ren[2] - p2_range_ren[1]
 # load data
 
 # x_data is of size length(p1_range) x length(p2_range) x size of state space
-# and contains the distribution over the sufficient statistic (here, they take on 39'571 distinct/unique values) at each sampled point in parameter space,
+# and contains the distribution over the sufficient statistic (here, they take on 301 distinct/unique values) at each sampled point in parameter space,
 # i.e., the relevant set of generative models
 x_data = load(data_save_folder * "x_data.jld")["x_data"]
 

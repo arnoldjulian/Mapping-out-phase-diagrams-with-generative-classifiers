@@ -37,7 +37,7 @@ function run_scheme_2_loc(data, p_range, l_param)
 
     # start parallel computation for sampled values of tuning parameter
     for p_tar_indx in 1:(length(p_range) - 1)
-        range_I, range_II = get_scheme_2_ranges(p_range, Int(l_param / 2), p_tar_indx)
+        range_I, range_II = get_scheme_2_ranges(p_range, Int(l_param), p_tar_indx)
         I_2_loc[p_tar_indx] = run_scheme_2_fixed_bipartition(data,
             p_range,
             range_I,

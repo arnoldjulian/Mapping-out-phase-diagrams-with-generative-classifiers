@@ -13,9 +13,9 @@ One of the central tasks in many-body physics is the determination of phase diag
 
 contains code to map out phase diagrams given generative models. The source files can be found in [source folder](./src/). We provide exemplary code for
 
-* the equilibrium phase diagram of the two-dimensional anisotropic Ising model (of size 20 x 20), see [the folder](./examples/Ising/).
+* the equilibrium phase diagram of the two-dimensional anisotropic Ising model (of size 6 x 6), see [the folder](./examples/Ising/).
 
-The corresponding data can be found in the [data folder](./data/). Other physical systems can be analyzed in the same fashion.
+The corresponding data can be found in the [data folder](./data/). The data for larger system sizes is available upon request. Other physical systems can be analyzed in the same fashion.
 
 ### How to run / prerequisites:
 

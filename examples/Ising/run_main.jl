@@ -11,11 +11,10 @@ ENV["GKSwstype"] = "nul"
 using JLD
 
 # system size
-L = 20
+L = 6
 
 # set path to data folder
-#data_save_folder = "../../data/Ising/L="*string(L)*"/"
-data_save_folder = "/home/julian/.julia/dev/actual_data/data/Ising/L=20/"
+data_save_folder = "../../data/Ising/L="*string(L)*"/run=1/"
 
 # define parameter ranges
 γ1_min = -1.475f0
@@ -33,7 +32,7 @@ points = vcat(collect(Iterators.product(γ1_range, γ2_range))...)
 # load data
 
 # x_data is of size length(γ1_range) x length(γ2_range) x size of state space
-# and contains the distribution over the sufficient statistic (here, they take on 39'571 distinct/unique values) at each sampled point in parameter space,
+# and contains the distribution over the sufficient statistic (here, they take on 301 distinct/unique values) at each sampled point in parameter space,
 # i.e., the relevant set of generative models
 x_data = load(data_save_folder * "x_data.jld")["x_data"]
 
@@ -115,7 +114,7 @@ ylims!((γ2_range[2], γ2_range[end - 1]))
 
 # define l parameter to choose for scheme 2
 # heuristic: choosing l to be small enough to capture only local variations but large enough to obtain a smooth signal by averaging over multiple points in parameter space
-l_param = 2
+l_param = 1
 
 # compute indicator of scheme 2 based on set of generative models
 I_2 = GCPT.run_scheme_2(x_data,
