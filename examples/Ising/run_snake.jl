@@ -1,3 +1,5 @@
+# In this script, we analyze the 2D phase diagram of the classical anisotropic Ising model using the snake scheme
+
 # activate project
 cd(@__DIR__)
 using Pkg;

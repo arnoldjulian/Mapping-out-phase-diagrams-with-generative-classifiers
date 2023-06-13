@@ -24,5 +24,7 @@ include("scheme_2.jl")
 include("scheme_3.jl")
 include("snake_scheme.jl")
 include("utils.jl")
+include("sampling_MPS.jl")
+include("sampling_wf.jl")
 
 end

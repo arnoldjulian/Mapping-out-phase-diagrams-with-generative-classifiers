@@ -1,5 +1,5 @@
 # In this script, we analyze the 2D phase diagram of the classical anisotropic Ising model using the three schemes introduced in the main text
-# Here, we compute expected values exactly (similarly for Fig. 2 of the main text and Fig. 2 of the SM). For routines which approximate expected values with sample means, see script `run_main_w_sample_mean.jl`.
+# Here, we approximate expected values with sample means. For routines which compute expected values exactly, as was done for Fig. 2 in the main text (as well as Fig. 2 in the SM), see script `run_main.jl`.
 
 # activate project
 cd(@__DIR__)
@@ -49,6 +49,9 @@ p_data = load(data_save_folder * "p_data.jld")["p_data"]
 # load analytical reference phase boundary
 ref_phase_boundary = load(data_save_folder * "ref_phase_boundary.jld")["ref_phase_boundary"]
 
+# set number of samples to draw from generative model at each point in parameter space
+n_samples = 100
+
 ##########
 # scheme 1
 ##########
@@ -71,7 +74,7 @@ for class_indx in 1:n_classes
 end
 
 # obtain indicator of scheme 1 based on set of generative models
-_,_,I_1 = GCPT.run_scheme_1(x_data, class_data, [dγ1, dγ2])
+_,_,I_1 = GCPT.run_scheme_1(x_data, class_data, [dγ1, dγ2],n_samples)
 
 # plotting routine
 function f(γ1, γ2, I_1)
@@ -109,7 +112,7 @@ plot!(ref_phase_boundary[:, 1, 4],
     label = false)
 xlims!((γ1_range[2], γ1_range[end - 1]))
 ylims!((γ2_range[2], γ2_range[end - 1]))
-#savefig("./results_ising_scheme_1.png")
+#savefig("./results_ising_scheme_1_w_sample_mean.png")
 
 ##########
 # scheme 2
@@ -126,7 +129,7 @@ I_2 = GCPT.run_scheme_2(x_data,
     γ1_range_LBC,
     γ2_range,
     γ2_range_LBC,
-    [dγ1, dγ2])
+    [dγ1, dγ2],n_samples)
 
 # plotting routine
 function f(γ1, γ2, I_2)
@@ -170,7 +173,7 @@ plot!(ref_phase_boundary[:, 1, 4],
     label = false)
 xlims!((γ1_range[2], γ1_range[end - 1]))
 ylims!((γ2_range[2], γ2_range[end - 1]))
-#savefig("./results_ising_scheme_2.png")
+#savefig("./results_ising_scheme_2_w_sample_mean.png")
 
 ##########
 # scheme 3
@@ -178,10 +181,10 @@ ylims!((γ2_range[2], γ2_range[end - 1]))
 
 # compute indicator of scheme 3 based on set of generative models
 # here the tuning parameters are estimated element-wise from linescan which decreases the bias of the corresponding estimator
-I_3 = GCPT.run_scheme_3_linescans(x_data, p_data, [dγ1, dγ2])
+I_3 = GCPT.run_scheme_3_linescans(x_data, p_data, [dγ1, dγ2],n_samples)
 
 # alternatively, the tuning parameters can be estimated jointly from the entire parameter space (in case of the Ising model this leads to a qualitatively similar, but weaker indicator signal)
-#_, _, I_3 = GCPT.run_scheme_3(x_data, p_data, [dγ1, dγ2])
+#_, _, I_3 = GCPT.run_scheme_3(x_data, p_data, [dγ1, dγ2], n_samples)
 
 # plotting routine
 function f(γ1, γ2, I_3)
@@ -225,4 +228,4 @@ plot!(ref_phase_boundary[:, 1, 4],
     label = false)
 xlims!((γ1_range[2], γ1_range[end - 1]))
 ylims!((γ2_range[2], γ2_range[end - 1]))
-#savefig("./results_ising_scheme_3.png")
+#savefig("./results_ising_scheme_3_w_sample_mean.png")
