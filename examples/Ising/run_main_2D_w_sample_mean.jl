@@ -17,7 +17,8 @@ using JLD
 L = 20
 
 # set path to data folder
-data_save_folder = "../../data/Ising/L=" * string(L) * "/"
+#data_save_folder = "../../data/Ising/L=" * string(L) * "/"
+data_save_folder = "/home/julian/.julia/dev/ml_for_pt_2/data/Ising_sufficient_p4/L=20/run=1/"
 
 # define parameter ranges
 γ1_min = -1.475f0
@@ -35,7 +36,7 @@ points = vcat(collect(Iterators.product(γ1_range, γ2_range))...)
 # load data
 
 # x_data is of size length(γ1_range) x length(γ2_range) x size of state space
-# and contains the distribution over the sufficient statistic (here, they take on 301 distinct/unique values) at each sampled point in parameter space,
+# and contains the distribution over the sufficient statistic (here, they take on 39'571 distinct/unique values) at each sampled point in parameter space,
 # i.e., the relevant set of generative models
 x_data = load(data_save_folder * "x_data.jld")["x_data"]
 
@@ -74,7 +75,7 @@ for class_indx in 1:n_classes
 end
 
 # obtain indicator of scheme 1 based on set of generative models
-_, _, I_1 = GCPT.run_scheme_1(x_data, class_data, [dγ1, dγ2], n_samples)
+mean_pred, I_1_classes, I_1 = GCPT.run_scheme_1(x_data, class_data, [dγ1, dγ2], n_samples)
 
 # plotting routine
 function f(γ1, γ2, I_1)
@@ -133,13 +134,13 @@ I_2 = GCPT.run_scheme_2(x_data,
 
 # plotting routine
 function f(γ1, γ2, I_2)
-    γ1_index = findall(x -> x == γ1, γ1_range[2:(end - 1)])[1]
+    γ1_index = findall(x -> x == γ1, γ1_range_LBC[2:(end - 1)])[1]
     γ2_index = findall(x -> x == γ2, γ2_range_LBC[2:(end - 1)])[1]
     return I_2[γ1_index, γ2_index]
 end
 
 Plots.pyplot()
-x = γ1_range[2:(end - 1)]
+x = γ1_range_LBC[2:(end - 1)]
 y = γ2_range_LBC[2:(end - 1)]
 
 X = repeat(reshape(x, 1, :), length(y), 1)

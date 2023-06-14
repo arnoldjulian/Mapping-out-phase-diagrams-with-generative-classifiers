@@ -13,9 +13,11 @@ One of the central tasks in many-body physics is the determination of phase diag
 
 contains code to map out phase diagrams given generative models. The source files can be found in [source folder](./src/). We provide exemplary code for
 
-* the equilibrium phase diagram of the two-dimensional anisotropic Ising model (of size 6 x 6), see [the folder](./examples/Ising/).
+* the equilibrium phase diagram of the two-dimensional anisotropic Ising model (L=20), see [this folder](./examples/Ising/),
 
-The corresponding data can be found in the [data folder](./data/). The data for larger system sizes is available upon request. Other physical systems can be analyzed in the same fashion.
+* and the ground-state phase diagram of the cluster-Ising model (L=7), see [this folder](./examples/Cluster-Ising/).
+
+The corresponding data can be found in the [data folder](./data/) (large files need to be unzipped). Additional data is available upon request. Other physical systems can be analyzed in the same fashion by replacing the corresponding generative models.
 
 ### How to run / prerequisites:
 
@@ -35,8 +37,8 @@ The corresponding data can be found in the [data folder](./data/). The data for 
 @article{arnold:2023,
   title={Mapping out phase diagrams with generative classifiers},
   author={Arnold, Julian and Schäfer, Frank and Edelman, Alan and Bruder, Christoph},
-  journal={arXiv:2305:xxxxx},
+  journal={arXiv:2306:xxxxx},
   year={2023},
-  url = {https://arxiv.org/abs/2305:xxxxx}
+  url = {https://arxiv.org/abs/2306:xxxxx}
 }
 ```

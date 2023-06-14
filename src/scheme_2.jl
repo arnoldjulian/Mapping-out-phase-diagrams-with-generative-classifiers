@@ -16,7 +16,9 @@ function get_scheme_2_ranges(p_range, n_neighbors, p_indx)
     return range_1, range_2
 end
 
+#######################################################
 # scheme 2 with expected values being evaluated exactly
+#######################################################
 function run_scheme_2(x_data, l_param, γ1_range, γ1_range_LBC, γ2_range, γ2_range_LBC, dγ)
     I_2_x = zeros(eltype(dγ[1]), length(γ1_range), length(γ2_range_LBC) - 2)
     for i in 1:length(γ1_range)
@@ -67,7 +69,11 @@ function run_scheme_2_fixed_bipartition(data, p_range, range_I, range_II)
     return 1 - 2 * error
 end
 
+############################################################################################################################################################
 # scheme 2 with expectation values being approximated with sample mean, where n_samples denotes the number of samples drawn at each point in parameter space
+############################################################################################################################################################
+
+# using generative models given in the form of x_data object
 function run_scheme_2(x_data,
     l_param,
     γ1_range,
@@ -148,8 +154,223 @@ function get_error_scheme_2(x_data, γ_range, range_I, range_II, sampl)
         prob_2 += get_probability(sampl, [i], x_data) / length(range_II)
     end
 
-    return minimum([
-        prob_1 / (prob_1 + prob_2 + eps(eltype(γ_range[1]))),
-        prob_2 / (prob_1 + prob_2 + eps(eltype(γ_range[1]))),
-    ])
+    prob_1 = prob_1 / (prob_1 + prob_2 + eps(eltype(γ_range[1])))
+    return minimum([prob_1, one(eltype(prob_1)) - prob_1])
 end
+
+# using generative models given in the form of exact wavefunctions
+function run_scheme_2_wf(wavefunc_data,
+    l_param,
+    γ1_range,
+    γ1_range_LBC,
+    γ2_range,
+    γ2_range_LBC,
+    dγ,
+    n_samples, L)
+    sampl = ([0], zeros(eltype(wavefunc_data[1, 1, 1]), (2^L, 2^L)))
+
+    I_2_x = zeros(eltype(dγ[1]), length(γ1_range), length(γ2_range_LBC) - 2)
+    for i in 1:length(γ1_range)
+        I_2_x[i, :] = run_scheme_2_loc_wf(wavefunc_data[i, :, :],
+            l_param,
+            γ2_range,
+            n_samples,
+            L,
+            sampl)
+    end
+
+    I_2_y = zeros(eltype(dγ[1]), length(γ1_range_LBC) - 2, length(γ2_range))
+    for i in 1:length(γ2_range)
+        I_2_y[:, i] = run_scheme_2_loc_wf(wavefunc_data[:, i, :],
+            l_param,
+            γ1_range,
+            n_samples,
+            L,
+            sampl)
+    end
+
+    I_2 = sqrt.((I_2_x .^ 2)[1:(end - 1), :] .+ (I_2_y .^ 2)[:, 1:(end - 1)])
+    return I_2
+end
+
+function run_scheme_2_wf(wavefunc_data, l_param, γ_range, γ_range_LBC, dγ, n_samples, L)
+    sampl = ([0], zeros(eltype(wavefunc_data[1, 1]), (2^L, 2^L)))
+    I_2 = run_scheme_2_loc_wf(wavefunc_data, l_param, γ_range, n_samples, L, sampl)
+
+    return I_2
+end
+
+function run_scheme_2_loc_wf(wavefunc_data, l_param, γ_range, n_samples, L, sampl)
+    I_2_loc = zeros(eltype(γ_range[1]), length(γ_range) - 1)
+
+    for γ_tar_indx in 1:(length(γ_range) - 1)
+        range_I, range_II = get_scheme_2_ranges(γ_range, Int(l_param), γ_tar_indx)
+        I_2_loc[γ_tar_indx] = run_scheme_2_fixed_bipartition_wf(wavefunc_data,
+            γ_range,
+            range_I,
+            range_II, n_samples, L, sampl)
+    end
+
+    return I_2_loc
+end
+
+function run_scheme_2_fixed_bipartition_wf(wavefunc_data,
+    γ_range,
+    range_I,
+    range_II,
+    n_samples,
+    L,
+    sampl)
+    mean_error = zero(eltype(γ_range[1]))
+
+    for j in range_I
+        for i in 1:n_samples
+            mean_error += get_error_scheme_2_wf(wavefunc_data,
+                γ_range,
+                range_I,
+                range_II,
+                get_sample_wf!([j], wavefunc_data, L, sampl), L) / (2 * length(range_I))
+        end
+    end
+
+    for j in range_II
+        for i in 1:n_samples
+            mean_error += get_error_scheme_2_wf(wavefunc_data,
+                γ_range,
+                range_I,
+                range_II,
+                get_sample_wf!([j], wavefunc_data, L, sampl), L) / (2 * length(range_II))
+        end
+    end
+
+    return 1 - 2 * mean_error / n_samples
+end
+
+function get_error_scheme_2_wf(wavefunc_data, γ_range, range_I, range_II, sampl, L)
+    prob_1 = zero(eltype(γ_range[1]))
+    prob_2 = zero(eltype(γ_range[1]))
+
+    for i in range_I
+        prob_1 += get_probability_wf(sampl, [i], wavefunc_data, L) / length(range_I)
+    end
+
+    for i in range_II
+        prob_2 += get_probability_wf(sampl, [i], wavefunc_data, L) / length(range_II)
+    end
+
+    prob_1 = prob_1 / (prob_1 + prob_2 + eps(eltype(γ_range[1])))
+    return minimum([prob_1, one(eltype(prob_1)) - prob_1])
+
+    # return minimum([
+    #     prob_1 / (prob_1 + prob_2 + eps(eltype(γ_range[1]))),
+    #     prob_2 / (prob_1 + prob_2 + eps(eltype(γ_range[1]))),
+    # ])
+end
+
+# using generative models given in the form of MPS wavefunctions
+function run_scheme_2_MPS(MPS_data,
+    l_param,
+    γ1_range,
+    γ1_range_LBC,
+    γ2_range,
+    γ2_range_LBC,
+    dγ,
+    n_samples, L, sites)
+    I_2_x = zeros(eltype(dγ[1]), length(γ1_range), length(γ2_range_LBC) - 2)
+    for i in 1:length(γ1_range)
+        I_2_x[i, :] = run_scheme_2_loc_MPS(MPS_data[i, :, :],
+            l_param,
+            γ2_range,
+            n_samples,
+            L,
+            sites)
+    end
+
+    I_2_y = zeros(eltype(dγ[1]), length(γ1_range_LBC) - 2, length(γ2_range))
+    for i in 1:length(γ2_range)
+        I_2_y[:, i] = run_scheme_2_loc_MPS(MPS_data[:, i, :],
+            l_param,
+            γ1_range,
+            n_samples,
+            L,
+            sites)
+    end
+
+    I_2 = sqrt.((I_2_x .^ 2)[1:(end - 1), :] .+ (I_2_y .^ 2)[:, 1:(end - 1)])
+    return I_2
+end
+
+function run_scheme_2_MPS(MPS_data, l_param, γ_range, γ_range_LBC, dγ, n_samples, L, sites)
+    I_2 = run_scheme_2_loc_MPS(MPS_data, l_param, γ_range, n_samples, L, sites)
+
+    return I_2
+end
+
+function run_scheme_2_loc_MPS(MPS_data, l_param, γ_range, n_samples, L, sites)
+    I_2_loc = zeros(eltype(γ_range[1]), length(γ_range) - 1)
+
+    for γ_tar_indx in 1:(length(γ_range) - 1)
+        range_I, range_II = get_scheme_2_ranges(γ_range, Int(l_param), γ_tar_indx)
+        I_2_loc[γ_tar_indx] = run_scheme_2_fixed_bipartition_MPS(MPS_data,
+            γ_range,
+            range_I,
+            range_II, n_samples, L, sites)
+    end
+
+    return I_2_loc
+end
+
+function run_scheme_2_fixed_bipartition_MPS(MPS_data,
+    γ_range,
+    range_I,
+    range_II,
+    n_samples,
+    L,
+    sites)
+    mean_error = zero(eltype(γ_range[1]))
+
+    for j in range_I
+        for i in 1:n_samples
+            mean_error += get_error_scheme_2_MPS(MPS_data,
+                γ_range,
+                range_I,
+                range_II,
+                get_sample_MPS([j], MPS_data, L, sites), L, sites) / (2 * length(range_I))
+        end
+    end
+
+    for j in range_II
+        for i in 1:n_samples
+            mean_error += get_error_scheme_2_MPS(MPS_data,
+                γ_range,
+                range_I,
+                range_II,
+                get_sample_MPS([j], MPS_data, L, sites), L, sites) / (2 * length(range_II))
+        end
+    end
+
+    return 1 - 2 * mean_error / n_samples
+end
+
+function get_error_scheme_2_MPS(MPS_data, γ_range, range_I, range_II, sampl, L, sites)
+    prob_1 = zero(eltype(γ_range[1]))
+    prob_2 = zero(eltype(γ_range[1]))
+
+    for i in range_I
+        prob_1 += get_probability_MPS(sampl, [i], MPS_data, L, sites) / length(range_I)
+    end
+
+    for i in range_II
+        prob_2 += get_probability_MPS(sampl, [i], MPS_data, L, sites) / length(range_II)
+    end
+
+    prob_1 = prob_1 / (prob_1 + prob_2 + eps(eltype(γ_range[1])))
+    return minimum([prob_1, one(eltype(prob_1)) - prob_1])
+
+    # return minimum([
+    #     prob_1 / (prob_1 + prob_2 + eps(eltype(γ_range[1]))),
+    #     prob_2 / (prob_1 + prob_2 + eps(eltype(γ_range[1]))),
+    # ])
+end
+
+# generative models of other forms can be used by overloading the `get_probability` and `get_sample` functions in utils.jl

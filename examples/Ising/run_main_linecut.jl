@@ -14,7 +14,7 @@ ENV["GKSwstype"] = "nul"
 using JLD
 
 # system size
-L = 0
+L = 6
 
 # set path to data folder
 data_save_folder = "../../data/Ising/L=" * string(L) * "/"
@@ -35,7 +35,7 @@ points = vcat(collect(Iterators.product(γ1_range, γ2_range))...)
 # load data
 
 # x_data is of size length(γ1_range) x length(γ2_range) x size of state space
-# and contains the distribution over the sufficient statistic (here, they take on 301 distinct/unique values) at each sampled point in parameter space,
+# and contains the distribution over the sufficient statistic (here, they take on 39'571 distinct/unique values) at each sampled point in parameter space,
 # i.e., the relevant set of generative models
 x_data = load(data_save_folder * "x_data.jld")["x_data"]
 
@@ -50,7 +50,7 @@ p_data = load(data_save_folder * "p_data.jld")["p_data"]
 ref_phase_boundary = load(data_save_folder * "ref_phase_boundary.jld")["ref_phase_boundary"]
 
 # in the following, we restrict ourselves to a horizontal linecut along γ_2 at γ_1 = -0.275
-indx_lc = 25
+indx_lc = 20
 γ1_range[indx_lc]
 
 ##########
