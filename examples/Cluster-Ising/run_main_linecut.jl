@@ -15,7 +15,6 @@ ENV["GKSwstype"] = "nul"
 using JLD
 using ITensors
 using ITensors.HDF5
-using BenchmarkTools
 
 # system size
 L = 7
@@ -36,9 +35,12 @@ dγ2 = 0.03f0
 γ2_range_LBC = collect((γ2_min - dγ2 / 2):dγ2:(γ2_max + dγ2 / 2))
 
 # In the following, we analyze a vertical linecut along γ_2 at γ_1 = 0.2 = γ1_range[17]
-# We consider three distinct descriptions of the system: 1) a description in terms of numerically exact probability distribution underlying the system (x_data object),
+# Reference values for the phase boundaries are obtained from maxima in the magnitude of the second derivative of the ground-state energy
+γ2_crit = [-0.99f0, 0.66f0]
+
+# We consider three distinct descriptions of the system: 1) a description in terms of numerically exact probability distribution underlying the system (x_data object; note that you may also sample from them),
 # 2) a description in terms of wavefunctions obtained from exact diagonalization from which we sample, and 3) a description in terms of matrix-product-state (MPS) wavefunctions from which we sample
-# Here, description 1 and 2 serve as comparisons. Note, however, that these two descriptions become intractable for larger systems.
+# Here, description 1 and 2 serve as comparisons. However, that these two descriptions become intractable for larger systems.
 
 # p_data of size length(γ1_range) x length(γ2_range) x number of tuning parameters and stores the value of all sampled points in parameter space
 p_data = load(data_save_folder * "p_data.jld")["p_data"]
@@ -124,14 +126,14 @@ plot!(γ2_range, pred_1[:, 3], color = "black", label = false, linewidth = 6)
 
 scatter!(γ2_range,
     pred_1_est_wf[:, 1, 1],
-    color = "red",
+    color = "orange",
     label = "exact diagonalization, sample mean")
 scatter!(γ2_range, pred_1_est_wf[:, 1, 2], color = "blue", label = false)
 scatter!(γ2_range, pred_1_est_wf[:, 1, 3], color = "green", label = false)
 
 scatter!(γ2_range,
     pred_1_est_MPS[:, 1, 1],
-    color = "red",
+    color = "orange",
     label = "MPS representation, sample mean",
     markershape = :star5)
 scatter!(γ2_range,
@@ -147,6 +149,7 @@ scatter!(γ2_range,
 xlabel!(L"h_{2}/J")
 # here the three colors denote the three different classes
 ylabel!(L"P(y|\gamma)")
+vline!(γ2_crit, color = "red", label = "reference")
 #savefig("./predictions_cluster_ising_linecut_scheme_1.png")
 
 plot(γ2_range[2:(end - 1)],
@@ -165,6 +168,7 @@ scatter!(γ2_range[2:(end - 1)],
     color = "green",
     label = "MPS representation, sample mean",
     linewidth = 6)
+vline!(γ2_crit, color = "red", label = "reference")
 xlabel!(L"h_{2}/J")
 ylabel!(L"I_{1}")
 #savefig("./indicator_cluster_ising_linecut_scheme_1.png")
@@ -215,6 +219,7 @@ scatter!(γ2_range_LBC[2:(end - 1)],
     I_2_est_MPS,
     color = "green",
     label = "MPS representation, sample mean")
+vline!(γ2_crit, color = "red", label = "reference")
 xlabel!(L"h_{2}/J")
 ylabel!(L"I_{2}")
 #savefig("./indicator_cluster_ising_linecut_scheme_2.png")
@@ -256,6 +261,7 @@ scatter!(γ2_range,
     pred_3_est_MPS,
     color = "green",
     label = "MPS representation, sample mean")
+vline!(γ2_crit, color = "red", label = "reference")
 xlabel!(L"h_{2}/J")
 ylabel!(L"\hat{\gamma}(\gamma)")
 #savefig("./prediction_cluster_ising_linecut_scheme_3.png")
@@ -277,7 +283,7 @@ scatter!(γ2_range,
     label = "MPS representation, sample mean")
 xlabel!(L"h_{2}/J")
 ylabel!(L"\sigma(\gamma)")
-xlims!((γ1_range[2], γ1_range[end - 1]))
+vline!(γ2_crit, color = "red", label = "reference")
 #savefig("./standard_dev_cluster_ising_linecut_scheme_3.png")
 
 plot(γ2_range[2:(end - 1)],
@@ -295,6 +301,7 @@ scatter!(γ2_range[2:(end - 1)],
     I_3_est_MPS,
     color = "green",
     label = "MPS representation, sample mean")
+vline!(γ2_crit, color = "red", label = "reference")
 xlabel!(L"h_{2}/J")
 ylabel!(L"I_{3}")
 #savefig("./indicator_cluster_ising_linecut_scheme_3.png")

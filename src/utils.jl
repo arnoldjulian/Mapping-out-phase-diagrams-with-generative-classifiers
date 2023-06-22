@@ -4,6 +4,17 @@ function crossentropy(p, l)
     return -(l * log(p + eps(eltype(p))) + (1 - l) * log(1 - p + eps(eltype(p))))
 end
 
+# cutoff signal at x >= cut
+function cutoff!(x, cut)
+    for j in 1:size(x)[2]
+        for i in 1:size(x)[1]
+            if x[i, j] >= cut || isnan(x[i, j]) || x[i, j] == Inf
+                x[i, j] = zero(eltype(x[i, j]))
+            end
+        end
+    end
+end
+
 #support functions for sampling from x_data object
 function get_probability(sampl, γ, x_data)
     if length(γ) == 1
@@ -76,11 +87,11 @@ function get_probability_MPS(s, γ, MPS_data, L, sites)
         if unit_seq[j] == 1
             opp = op("H", sites[j]) * psi[j]
             noprime!(opp)
-            psi[j] = opp
+            psi[j] .= opp
         elseif unit_seq[j] == 2
             opp = op(adjoint([[1, 1im] [1, -1im]] ./ sqrt(2)), sites[j]) * psi[j]
             noprime!(opp)
-            psi[j] = opp
+            psi[j] .= opp
         end
     end
 
@@ -104,11 +115,11 @@ function get_sample_MPS(γ, MPS_data, L, sites)
         if unit_seq[j] == 1
             opp = op("H", sites[j]) * psi[j]
             noprime!(opp)
-            psi[j] = opp
+            psi[j] .= opp
         elseif unit_seq[j] == 2
             opp = op(adjoint([[1, 1im] [1, -1im]] ./ sqrt(2)), sites[j]) * psi[j]
             noprime!(opp)
-            psi[j] = opp
+            psi[j] .= opp
         end
     end
     return (ITensors.sample!(psi), unit_seq)

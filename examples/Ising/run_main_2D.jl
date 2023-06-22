@@ -1,5 +1,6 @@
 # In this script, we analyze the 2D phase diagram of the classical anisotropic Ising model using the three schemes introduced in the main text
-# Here, we compute expected values exactly (similarly for Fig. 2 of the main text and Fig. 2 of the SM). For routines which approximate expected values with sample means, see script `run_main_2D_w_sample_mean.jl`.
+# Here, we compute expected values exactly (similarly for Fig. 2 of the main text and Fig. 2 of the SM). 
+# For routines which approximate expected values with sample means, add aditional input argument at the end specifying the number of samples to draw from the generative model x_data at each point in parameter space.
 
 # activate project
 cd(@__DIR__)
@@ -18,7 +19,6 @@ L = 20
 
 # set path to data folder
 data_save_folder = "../../data/Ising/L=" * string(L) * "/"
-data_save_folder = "/home/julian/.julia/dev/ml_for_pt_2/data/Ising_sufficient_p4/L=20/run=1/"
 
 # define parameter ranges
 γ1_min = -1.475f0

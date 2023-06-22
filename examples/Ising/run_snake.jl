@@ -14,7 +14,7 @@ using JLD
 using Flux
 
 # system size
-L = 6
+L = 20
 
 # set path to data folder
 data_save_folder = "../../data/Ising/L=" * string(L) * "/"
