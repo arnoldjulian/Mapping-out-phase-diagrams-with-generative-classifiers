@@ -37,8 +37,8 @@ The corresponding data can be found in the [data folder](./data/) (large files n
 @article{arnold:2023,
   title={Mapping out phase diagrams with generative classifiers},
   author={Arnold, Julian and Schäfer, Frank and Edelman, Alan and Bruder, Christoph},
-  journal={arXiv:2306:xxxxx},
+  journal={arXiv:2306.14894},
   year={2023},
-  url = {https://arxiv.org/abs/2306:xxxxx}
+  url = {https://arxiv.org/abs/2306.14894}
 }
 ```
